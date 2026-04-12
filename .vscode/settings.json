@@ -1,19 +1,23 @@
 {
-  "files.exclude": {
-    "**/.vite-hooks": true,
-    "**/dist": true,
-    "**/node_modules": true
-  },
-  "search.exclude": {
-    "**/.vite-hooks": true,
-    "**/dist": true,
-    "**/node_modules": true
-  },
-  "explorer.fileNesting.enabled": true,
-  "explorer.fileNesting.expand": false,
-  "explorer.fileNesting.patterns": {
-    "package.json": "pnpm-lock.yaml, tsconfig.json, vite.config.ts",
-    ".env.example": ".env",
-    "*.ts": "${capture}.test.ts"
-  }
+    "editor.insertSpaces": true,
+    "editor.rulers": [200],
+    "editor.tabSize": 4,
+    "editor.wordWrapColumn": 200,
+    "files.exclude": {
+        "**/.vite-hooks": true,
+        "**/dist": true,
+        "**/node_modules": true
+    },
+    "search.exclude": {
+        "**/.vite-hooks": true,
+        "**/dist": true,
+        "**/node_modules": true
+    },
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": false,
+    "explorer.fileNesting.patterns": {
+        "package.json": "pnpm-lock.yaml, tsconfig.json, vite.config.ts",
+        ".env.example": ".env",
+        "*.ts": "${capture}.test.ts"
+    }
 }

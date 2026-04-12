@@ -34,15 +34,7 @@ Slash commands sync automatically on startup for `DISCORD_GUILD_ID`.
 - `/set_pda_channel channel:<channel>` sets the destination channel for PDA messages
 - `/pda character_name:<name> message:<message>` sends a PDA embed into the configured channel
 
-The PDA channel setting is stored in `config.json` as:
-
-```json
-{
-  "pda": {
-    "channel": "987654321098765432"
-  }
-}
-```
+The PDA channel setting is stored in the global SQLite config database at `config.sqlite`.
 
 Run the full local verification flow:
 

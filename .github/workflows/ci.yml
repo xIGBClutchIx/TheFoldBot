@@ -1,20 +1,20 @@
 name: ci
 
 on:
-  pull_request:
-  push:
+    pull_request:
+    push:
 
 permissions:
-  contents: read
+    contents: read
 
 jobs:
-  verify:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: voidzero-dev/setup-vp@v1
-        with:
-          node-version: "24"
-          cache: true
-      - run: vp install --frozen-lockfile
-      - run: vp run ci
+    verify:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: voidzero-dev/setup-vp@v1
+              with:
+                  node-version: "24"
+                  cache: true
+            - run: vp install --frozen-lockfile
+            - run: vp run ci

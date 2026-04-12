@@ -15,7 +15,9 @@ dist-ssr
 .env.*
 coverage
 !**/.env.example
-config.json
+config.sqlite
+config.sqlite-shm
+config.sqlite-wal
 
 # Editor directories and files
 .vscode/*
