@@ -4,15 +4,23 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vp run @thefoldbot/bot#dev",
-    "check": "vp run -r check",
-    "test": "vp run -r test",
-    "build": "vp run -r build",
+    "dev": "node --watch --experimental-strip-types src/index.ts",
+    "check": "node --input-type=module -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true });\" && vp check",
+    "test": "vp test",
+    "build": "vp pack",
+    "start": "node dist/index.mjs",
     "ci": "vp run check && vp run test && vp run build",
     "prepare": "vp config"
   },
+  "dependencies": {
+    "discord.js": "^14.26.2",
+    "dotenv": "^17.4.2"
+  },
   "devDependencies": {
-    "vite-plus": "catalog:"
+    "@types/node": "^25.6.0",
+    "typescript": "^6.0.2",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.1.16",
+    "vite-plus": "0.1.16"
   },
   "engines": {
     "node": ">=22.12.0"

@@ -1,6 +1,6 @@
 # TheFoldBot
 
-A Vite+ monorepo scaffold for a TypeScript Discord slash-command bot.
+A Vite+ TypeScript Discord slash-command bot.
 
 ## Requirements
 
@@ -11,10 +11,10 @@ A Vite+ monorepo scaffold for a TypeScript Discord slash-command bot.
 
 ```bash
 vp install
-cp apps/bot/.env.example apps/bot/.env
+cp .env.example .env
 ```
 
-Fill in these variables in `apps/bot/.env`:
+Fill in these variables in `.env`:
 
 - `DISCORD_BOT_TOKEN`
 - `DISCORD_GUILD_ID`
@@ -34,7 +34,7 @@ Slash commands sync automatically on startup for `DISCORD_GUILD_ID`.
 - `/set_pda_channel channel:<channel>` sets the destination channel for PDA messages
 - `/pda character_name:<name> message:<message>` sends a PDA embed into the configured channel
 
-The PDA channel setting is stored in `apps/bot/config.json` as:
+The PDA channel setting is stored in `config.json` as:
 
 ```json
 {
@@ -56,4 +56,4 @@ Build the bot for production:
 vp run build
 ```
 
-The bundled output is written to `apps/bot/dist/`.
+The bundled output is written to `dist/`.

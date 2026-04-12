@@ -1,14 +1,20 @@
 {
   "compilerOptions": {
     "target": "ES2023",
+    "lib": ["ES2023"],
     "noEmit": true,
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "allowImportingTsExtensions": true,
     "strict": true,
     "types": ["node"],
+    "esModuleInterop": true,
+    "isolatedModules": true,
     "verbatimModuleSyntax": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
   },
-  "include": ["vite.config.ts"]
+  "include": ["src", "vite.config.ts"]
 }
