@@ -1,0 +1,26 @@
+{
+  "name": "@thefoldbot/bot",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch --experimental-strip-types src/index.ts",
+    "check": "node --input-type=module -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true });\" && vp check",
+    "test": "vp test",
+    "build": "vp pack",
+    "start": "node dist/index.mjs"
+  },
+  "dependencies": {
+    "discord.js": "catalog:",
+    "dotenv": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

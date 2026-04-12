@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "noEmit": true,
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "allowImportingTsExtensions": true,
+    "strict": true,
+    "types": ["node"],
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true
+  },
+  "include": ["vite.config.ts"]
+}
