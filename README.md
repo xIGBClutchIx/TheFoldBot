@@ -49,3 +49,24 @@ vp run build
 ```
 
 The bundled output is written to `dist/`.
+
+## Production Run Script
+
+Use the repo-root script to keep the bot running and auto-update from Git:
+
+```bash
+./run.sh
+```
+
+What it does:
+
+- runs `vp install` and `vp run build` before the bot starts
+- launches the production bot with `vp run start`
+- checks the configured Git upstream every 60 seconds
+- if the checkout is clean and a remote update exists, pulls with `git pull --ff-only`, rebuilds, and restarts the bot
+
+Optional environment variables:
+
+- `CHECK_INTERVAL=300 ./run.sh` to change the polling interval in seconds
+- `START_CMD='vp run start' ./run.sh` to override the start command
+- `REMOTE_NAME=origin ./run.sh` to choose a different Git remote
