@@ -14,15 +14,15 @@ export async function syncGuildCommands(publisher: GuildCommandPublisher, env: B
     const body = buildCommandPayload();
 
     logInfo("sync", "syncing slash commands", {
-        commandCount: body.length,
         guildId: env.guildId,
+        commandCount: body.length,
     });
 
     await publisher.publish(body, env);
 
     logInfo("sync", "synced slash commands", {
-        commandCount: body.length,
         guildId: env.guildId,
+        commandCount: body.length,
     });
 
     return body;

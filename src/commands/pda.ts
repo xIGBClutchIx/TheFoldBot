@@ -49,8 +49,8 @@ export const pdaCommand: SlashCommand = {
 
             if (status === 403) {
                 logWarn("pda", "cannot access configured channel", {
-                    channelId: configuredChannelId,
                     guildId: interaction.guildId,
+                    channelId: configuredChannelId,
                     status,
                 });
                 await sendEphemeral(interaction, `I cannot access configured channel \`${configuredChannelId}\`. Grant the bot access to that channel or run \`/set_pda_channel\` again.`);
@@ -58,8 +58,8 @@ export const pdaCommand: SlashCommand = {
             }
 
             logWarn("pda", "failed to look up configured channel", {
-                channelId: configuredChannelId,
                 guildId: interaction.guildId,
+                channelId: configuredChannelId,
                 status,
             });
             await sendEphemeral(interaction, "Discord returned an error while looking up the configured channel.");
@@ -69,16 +69,16 @@ export const pdaCommand: SlashCommand = {
         if (resolvedChannel.status !== "ok") {
             if (resolvedChannel.status === "not_found") {
                 logWarn("pda", "configured channel was not found", {
-                    channelId: configuredChannelId,
                     guildId: interaction.guildId,
+                    channelId: configuredChannelId,
                 });
                 await sendEphemeral(interaction, `Configured channel \`${configuredChannelId}\` was not found in this server. Run \`/set_pda_channel\` to pick a valid channel.`);
                 return;
             }
 
             logWarn("pda", "configured channel type is unsupported", {
-                channelId: configuredChannelId,
                 guildId: interaction.guildId,
+                channelId: configuredChannelId,
             });
             await sendEphemeral(interaction, "Configured channel type is not supported for PDA messages.");
             return;
@@ -97,8 +97,8 @@ export const pdaCommand: SlashCommand = {
 
             if (status === 403) {
                 logWarn("pda", "cannot send to configured channel", {
-                    channelId: channel.id,
                     guildId: interaction.guildId,
+                    channelId: channel.id,
                     status,
                 });
                 await sendEphemeral(interaction, "I do not have permission to post in the configured channel.");
@@ -106,8 +106,8 @@ export const pdaCommand: SlashCommand = {
             }
 
             logWarn("pda", "failed to send pda message", {
-                channelId: channel.id,
                 guildId: interaction.guildId,
+                channelId: channel.id,
                 status,
             });
             await sendEphemeral(interaction, "Failed to send the PDA message to the configured channel.");
@@ -115,10 +115,11 @@ export const pdaCommand: SlashCommand = {
         }
 
         logInfo("pda", "sent pda message", {
-            channelId: channel.id,
-            characterName,
             guildId: interaction.guildId,
+            channelId: channel.id,
             sentBy: interaction.user.id,
+            characterName,
+            message,
         });
         // The user only gets a lightweight ephemeral confirmation; the actual PDA went to the configured channel.
         const sentConfirmation = await sendEphemeral(interaction, "PDA message sent.");

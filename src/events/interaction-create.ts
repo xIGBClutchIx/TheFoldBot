@@ -29,8 +29,8 @@ async function replyWithExecutionError(interaction: ChatInputCommandInteraction)
     } catch (error) {
         if (typeof error === "object" && error !== null && isIgnorableInteractionError(error)) {
             logWarn("commands", "skipped execution error response because the interaction was already acknowledged", {
-                commandName: interaction.commandName,
                 guildId: interaction.guildId,
+                commandName: interaction.commandName,
                 interactionId: interaction.id,
             });
             return;
@@ -50,8 +50,8 @@ export async function handleInteractionCreate(interaction: Interaction): Promise
 
     if (!command) {
         logWarn("commands", "received unknown command", {
-            commandName: interaction.commandName,
             guildId: interaction.guildId,
+            commandName: interaction.commandName,
         });
         await interaction.reply({
             content: "Unknown command.",
@@ -66,17 +66,17 @@ export async function handleInteractionCreate(interaction: Interaction): Promise
         // Discord can invalidate or consume an interaction before we respond; treat that as noise.
         if (typeof error === "object" && error !== null && isIgnorableInteractionError(error)) {
             logWarn("commands", "ignored stale interaction during command execution", {
-                code: getDiscordApiErrorCode(error),
-                commandName: interaction.commandName,
                 guildId: interaction.guildId,
+                commandName: interaction.commandName,
                 interactionId: interaction.id,
+                code: getDiscordApiErrorCode(error),
             });
             return;
         }
 
         logError("commands", "failed to execute command", {
-            commandName: interaction.commandName,
             guildId: interaction.guildId,
+            commandName: interaction.commandName,
         });
         console.error(error);
         await replyWithExecutionError(interaction);

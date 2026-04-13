@@ -51,8 +51,8 @@ export const setPdaChannelCommand: SlashCommand = {
 
         await setConfiguredPdaChannelId(channel.id);
         logInfo("pda", "updated pda channel", {
-            channelId: channel.id,
             guildId: interaction.guildId,
+            channelId: channel.id,
             updatedBy: interaction.user.id,
         });
         await sendEphemeral(interaction, `PDA channel set to ${channel.toString()}`);
