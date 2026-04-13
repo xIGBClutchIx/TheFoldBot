@@ -9,7 +9,7 @@ export default defineConfig({
         "*.{cjs,cts,js,json,md,mjs,mts,ts,yaml,yml}": "vp check --fix && node scripts/check-strict-types.mjs",
     },
     fmt: {
-        ignorePatterns: ["dist/**"],
+        ignorePatterns: ["dist/**", "AGENTS.md"],
         printWidth: 200,
         tabWidth: 4,
         useTabs: false,
