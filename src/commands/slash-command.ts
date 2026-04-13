@@ -1,5 +1,6 @@
 import type { ChatInputCommandInteraction, RESTPostAPIApplicationCommandsJSONBody } from "discord.js";
 
+// Keep command modules small: metadata for sync plus one execute handler for dispatch.
 export interface SlashCommand {
     readonly name: string;
     readonly data: {

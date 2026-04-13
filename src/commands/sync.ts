@@ -10,6 +10,7 @@ export interface GuildCommandPublisher {
 }
 
 export async function syncGuildCommands(publisher: GuildCommandPublisher, env: BotEnv): Promise<CommandPayload> {
+    // Build the payload once so logging, tests, and Discord publish all use the same command data.
     const body = buildCommandPayload();
 
     logInfo("sync", "syncing slash commands", {

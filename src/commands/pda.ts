@@ -5,6 +5,7 @@ import { logInfo, logWarn } from "../log.ts";
 import type { SlashCommand } from "./slash-command.ts";
 import { buildPdaEmbed, deferEphemeralReply, getDiscordHttpStatus, getInteractionDisplayName, resolveConfiguredPdaChannel, sendEphemeral, sendPdaMessage } from "./pda-support.ts";
 
+// Keep slash-command validation aligned with the downstream thread-title and embed limits.
 const pdaCharacterNameMaxLength = 94;
 const pdaMessageMaxLength = 4096;
 
@@ -23,6 +24,7 @@ export const pdaCommand: SlashCommand = {
 
         const guild = interaction.guild!;
 
+        // Claim the interaction up front because channel lookup and message send can take a while.
         if (!(await deferEphemeralReply(interaction))) {
             logWarn("pda", "interaction was already acknowledged before pda execution", {
                 guildId: interaction.guildId,
@@ -118,6 +120,7 @@ export const pdaCommand: SlashCommand = {
             guildId: interaction.guildId,
             sentBy: interaction.user.id,
         });
+        // The user only gets a lightweight ephemeral confirmation; the actual PDA went to the configured channel.
         const sentConfirmation = await sendEphemeral(interaction, "PDA message sent.");
 
         if (!sentConfirmation) {

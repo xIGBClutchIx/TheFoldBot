@@ -12,6 +12,7 @@ const deferredExecutionErrorMessage: InteractionEditReplyOptions = {
     content: "There was an error while executing this command.",
 };
 
+// Deferred interactions need `editReply`, while already-replied ones need `followUp`.
 async function replyWithExecutionError(interaction: ChatInputCommandInteraction): Promise<void> {
     try {
         if (interaction.deferred) {
@@ -40,6 +41,7 @@ async function replyWithExecutionError(interaction: ChatInputCommandInteraction)
 }
 
 export async function handleInteractionCreate(interaction: Interaction): Promise<void> {
+    // Ignore everything except slash commands. Normal chat messages never hit this path.
     if (!interaction.isChatInputCommand()) {
         return;
     }
@@ -61,6 +63,7 @@ export async function handleInteractionCreate(interaction: Interaction): Promise
     try {
         await command.execute(interaction);
     } catch (error) {
+        // Discord can invalidate or consume an interaction before we respond; treat that as noise.
         if (typeof error === "object" && error !== null && isIgnorableInteractionError(error)) {
             logWarn("commands", "ignored stale interaction during command execution", {
                 code: getDiscordApiErrorCode(error),

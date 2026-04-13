@@ -27,6 +27,7 @@ export function parseBotEnv(source: NodeJS.ProcessEnv): BotEnv {
 }
 
 export function loadBotEnv(source: NodeJS.ProcessEnv = process.env): BotEnv {
+    // Only load `.env` for the live process. Tests can pass a synthetic env object directly.
     if (source === process.env) {
         loadDotenv();
     }

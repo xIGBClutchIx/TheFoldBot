@@ -11,6 +11,7 @@ export interface GlobalConfig {
 }
 
 export function getGlobalConfigDatabasePath(homeDirectory: string = homedir()): string {
+    // Keep config outside the repo so service working directories do not change where state lives.
     return resolve(homeDirectory, globalConfigDirectoryName, "config.sqlite");
 }
 
@@ -59,6 +60,7 @@ export async function setConfiguredPdaChannelId(channelId: string, databasePath?
 async function openGlobalConfigDatabase(databasePath: string = getGlobalConfigDatabasePath()): Promise<DatabaseSync> {
     await mkdir(dirname(databasePath), { recursive: true });
 
+    // The database is tiny, so opening per operation keeps the helper simple and reliable.
     const database = new DatabaseSync(databasePath);
 
     initializeSchema(database);

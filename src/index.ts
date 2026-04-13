@@ -10,6 +10,7 @@ import { handleReady } from "./events/ready.ts";
 import { logError, logInfo } from "./log.ts";
 
 async function main(): Promise<void> {
+    // Load environment and disk-backed config before touching Discord.
     const env = loadBotEnv();
     logInfo("bot", "starting bot", {
         guildId: env.guildId,
@@ -21,6 +22,7 @@ async function main(): Promise<void> {
     const client = new Client({
         intents: [GatewayIntentBits.Guilds],
     });
+    // `once` keeps the startup flow linear while still using Discord.js events.
     const ready = once(client, Events.ClientReady) as Promise<[Client<true>]>;
 
     client.on(Events.InteractionCreate, (interaction) => {
@@ -30,6 +32,7 @@ async function main(): Promise<void> {
     logInfo("discord", "logging in");
     await client.login(env.botToken);
     const [readyClient] = await ready;
+    // Sync against the development guild on every boot so slash-command changes show up quickly.
     const commands = await syncGuildCommands(
         {
             async publish(commandData, currentEnv) {

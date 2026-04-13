@@ -2,6 +2,7 @@ type LogLevel = "error" | "info" | "warn";
 type LogValue = boolean | number | string | null;
 type LogFields = Record<string, LogValue>;
 
+// Keep runtime logs compact for humans while preserving machine-friendly key=value fields.
 function writeLog(level: LogLevel, scope: string, message: string, fields: LogFields = {}): void {
     const timestamp = colorize("dim", formatTimestamp());
     const levelLabel = colorize(getLevelColor(level), level.toUpperCase().padEnd(5, " "));
@@ -100,6 +101,7 @@ function getColorCode(color: ColorName): string {
 }
 
 function supportsColor(): boolean {
+    // `FORCE_COLOR` intentionally wins over `NO_COLOR` so local debugging can opt back in.
     if (process.env.FORCE_COLOR === "0") {
         return false;
     }

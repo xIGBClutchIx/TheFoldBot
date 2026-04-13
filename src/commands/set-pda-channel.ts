@@ -26,6 +26,7 @@ export const setPdaChannelCommand: SlashCommand = {
 
         const guild = interaction.guild!;
 
+        // This path does permission checks and member fetches, so defer before the slower work starts.
         if (!(await deferEphemeralReply(interaction))) {
             return;
         }

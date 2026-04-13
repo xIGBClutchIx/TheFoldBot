@@ -38,6 +38,7 @@ interface DiscordApiError {
 const interactionAlreadyAcknowledgedCode = 40060;
 const unknownInteractionCode = 10062;
 
+// Long-running commands should claim the interaction immediately so later edits stay valid.
 export async function deferEphemeralReply(interaction: ChatInputCommandInteraction): Promise<boolean> {
     if (interaction.deferred || interaction.replied) {
         return true;
@@ -67,6 +68,7 @@ export async function sendEphemeral(interaction: ChatInputCommandInteraction, co
     };
 
     try {
+        // Deferred interactions already have a placeholder response, so update it in place.
         if (interaction.deferred) {
             await interaction.editReply(editMessage);
             return true;
@@ -143,6 +145,7 @@ export function getInteractionDisplayName(interaction: ChatInputCommandInteracti
 }
 
 export async function sendPdaMessage(channel: SupportedPdaChannel, embed: EmbedBuilder, characterName: string): Promise<void> {
+    // Forum and media channels cannot receive plain messages; they need a thread starter instead.
     if (isThreadOnlyPdaChannel(channel)) {
         await channel.threads.create({
             name: `PDA - ${characterName}`,
@@ -159,6 +162,7 @@ export async function sendPdaMessage(channel: SupportedPdaChannel, embed: EmbedB
 }
 
 export async function resolveConfiguredPdaChannel(guild: Guild, channelId: string): Promise<ResolvedConfiguredPdaChannel> {
+    // Prefer cache first, then fall back to an API lookup if the channel is not already hydrated.
     const channel = guild.channels.cache.get(channelId) ?? (await guild.channels.fetch(channelId));
 
     if (channel === null) {
@@ -194,6 +198,7 @@ export function getDiscordApiErrorCode(error: object | null): number | null {
 export function isIgnorableInteractionError(error: object | null): boolean {
     const code = getDiscordApiErrorCode(error);
 
+    // Both codes mean Discord no longer expects a response for this interaction token.
     return code === interactionAlreadyAcknowledgedCode || code === unknownInteractionCode;
 }
 
