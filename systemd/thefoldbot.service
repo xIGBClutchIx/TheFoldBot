@@ -8,6 +8,7 @@ Type=simple
 WorkingDirectory=/root/TheFoldBot
 EnvironmentFile=/root/TheFoldBot/.env
 Environment=PATH=/root/.vite-plus/bin:/root/.local/bin:/usr/local/bin:/usr/bin:/bin
+Environment=FORCE_COLOR=1
 ExecStart=/root/.vite-plus/bin/vp run start
 Restart=always
 RestartSec=2
