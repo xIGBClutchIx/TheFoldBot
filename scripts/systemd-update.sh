@@ -11,7 +11,6 @@ log() {
 }
 
 cd "$REPO_DIR"
-VP_SH="$REPO_DIR/scripts/vp.sh"
 
 if ! git diff --quiet || ! git diff --cached --quiet; then
     log "working tree is dirty; refusing to auto-update"
@@ -39,10 +38,10 @@ log "pulling latest changes"
 git pull --ff-only "$REMOTE_NAME"
 
 log "installing dependencies"
-"$VP_SH" install
+vp install
 
 log "building bot"
-"$VP_SH" run build
+vp run build
 
 log "restarting $SERVICE_NAME"
 systemctl restart "$SERVICE_NAME"

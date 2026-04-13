@@ -69,14 +69,14 @@ systemctl enable --now thefoldbot-update.timer
 
 What this setup does:
 
-- `thefoldbot.service` runs the repo wrapper at `scripts/vp.sh run start` and restarts automatically if the bot exits
+- `thefoldbot.service` runs `vp run start` and restarts automatically if the bot exits
 - `thefoldbot-update.timer` runs every minute
 - `thefoldbot-update.service` calls the updater script
 - the updater only restarts the bot after `git pull --ff-only`, `vp install`, and `vp run build` all succeed
 
 This keeps downtime to the restart window instead of the full pull/install/build window.
 
-If `vp` is not on `systemd`'s default PATH, set `VP_BIN` in the service environment to the full binary path such as `/root/.local/bin/vp` or `/usr/local/bin/vp`.
+The unit sets an explicit `PATH` so `systemd` can resolve `vp` and the Vite+ managed Node runtime without depending on interactive shell startup files.
 
 Useful commands:
 
