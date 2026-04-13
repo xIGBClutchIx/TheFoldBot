@@ -50,23 +50,37 @@ vp run build
 
 The bundled output is written to `dist/`.
 
-## Production Run Script
+## Production With systemd
 
-Use the repo-root script to keep the bot running and auto-update from Git:
+This repo includes a root/system-level `systemd` setup under [`systemd/`](/root/repos/xigbclutchix/TheFoldBot/systemd) plus an updater script at [`scripts/systemd-update.sh`](/root/repos/xigbclutchix/TheFoldBot/scripts/systemd-update.sh).
+
+These unit files assume the repo lives at `/root/TheFoldBot`.
+
+Install the units on the server:
 
 ```bash
-./run.sh
+cp systemd/thefoldbot.service /etc/systemd/system/
+cp systemd/thefoldbot-update.service /etc/systemd/system/
+cp systemd/thefoldbot-update.timer /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable --now thefoldbot.service
+systemctl enable --now thefoldbot-update.timer
 ```
 
-What it does:
+What this setup does:
 
-- runs `vp install` and `vp run build` before the bot starts
-- launches the production bot with `vp run start`
-- checks the configured Git upstream every 60 seconds
-- if the checkout is clean and a remote update exists, pulls with `git pull --ff-only`, rebuilds, and restarts the bot
+- `thefoldbot.service` runs `vp run start` and restarts automatically if the bot exits
+- `thefoldbot-update.timer` runs every minute
+- `thefoldbot-update.service` calls the updater script
+- the updater only restarts the bot after `git pull --ff-only`, `vp install`, and `vp run build` all succeed
 
-Optional environment variables:
+This keeps downtime to the restart window instead of the full pull/install/build window.
 
-- `CHECK_INTERVAL=300 ./run.sh` to change the polling interval in seconds
-- `START_CMD='vp run start' ./run.sh` to override the start command
-- `REMOTE_NAME=origin ./run.sh` to choose a different Git remote
+Useful commands:
+
+```bash
+systemctl status thefoldbot.service
+systemctl status thefoldbot-update.timer
+journalctl -u thefoldbot.service -f
+journalctl -u thefoldbot-update.service -f
+```

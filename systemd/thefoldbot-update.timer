@@ -1,0 +1,10 @@
+[Unit]
+Description=Check TheFoldBot for Git updates
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+Unit=thefoldbot-update.service
+
+[Install]
+WantedBy=timers.target
