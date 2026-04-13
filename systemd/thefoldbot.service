@@ -7,7 +7,7 @@ Wants=network-online.target
 Type=simple
 WorkingDirectory=/root/TheFoldBot
 EnvironmentFile=/root/TheFoldBot/.env
-ExecStart=/usr/bin/env sh -lc 'vp run start'
+ExecStart=/root/TheFoldBot/scripts/vp.sh run start
 Restart=always
 RestartSec=2
 
