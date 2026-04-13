@@ -121,27 +121,12 @@ export function getMissingPostPermissions(channel: SupportedPdaChannel, member: 
     return missingPermissions;
 }
 
-export function buildPdaEmbed(characterName: string, message: string, senderDisplayName: string): EmbedBuilder {
-    return new EmbedBuilder()
-        .setTitle("📡 PDA Message")
-        .setDescription(message)
-        .setColor(0x3498db)
-        .addFields({
-            name: "Character",
-            value: characterName,
-            inline: true,
-        })
-        .setFooter({
-            text: `Sent by ${senderDisplayName}`,
-        });
-}
-
-export function getInteractionDisplayName(interaction: ChatInputCommandInteraction): string {
-    if (interaction.member && "displayName" in interaction.member) {
-        return interaction.member.displayName;
-    }
-
-    return interaction.user.displayName;
+export function buildPdaEmbed(characterName: string, message: string): EmbedBuilder {
+    return new EmbedBuilder().setTitle("📡 PDA Message").setDescription(message).setColor(0x3498db).addFields({
+        name: "Character",
+        value: characterName,
+        inline: true,
+    });
 }
 
 export async function sendPdaMessage(channel: SupportedPdaChannel, embed: EmbedBuilder, characterName: string): Promise<void> {

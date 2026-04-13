@@ -5,15 +5,15 @@ import { describe, expect, test, vi } from "vite-plus/test";
 import { buildPdaEmbed, deferEphemeralReply, getMissingPostPermissions, isIgnorableInteractionError, sendEphemeral, sendPdaMessage } from "./pda-support.ts";
 
 describe("pda support", () => {
-    test("builds the PDA embed with the sender footer", () => {
-        const embed = buildPdaEmbed("Ripley", "Status update", "Ash");
+    test("builds the PDA embed without sender identity", () => {
+        const embed = buildPdaEmbed("Ripley", "Status update");
 
         expect(embed.toJSON()).toMatchObject({
             title: "📡 PDA Message",
             description: "Status update",
-            footer: { text: "Sent by Ash" },
             fields: [{ name: "Character", value: "Ripley", inline: true }],
         });
+        expect(embed.toJSON().footer).toBeUndefined();
     });
 
     test("lists missing text-channel permissions", () => {
@@ -33,7 +33,7 @@ describe("pda support", () => {
             threads: { create },
         };
 
-        await sendPdaMessage(channel as never, buildPdaEmbed("Ripley", "Ready", "Ash"), "Ripley");
+        await sendPdaMessage(channel as never, buildPdaEmbed("Ripley", "Ready"), "Ripley");
 
         expect(create).toHaveBeenCalledWith({
             name: "PDA - Ripley",

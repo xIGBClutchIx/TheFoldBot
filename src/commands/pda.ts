@@ -3,7 +3,7 @@ import { SlashCommandBuilder } from "discord.js";
 import { getConfiguredPdaChannelId } from "../config/global-config.ts";
 import { logInfo, logWarn } from "../log.ts";
 import type { SlashCommand } from "./slash-command.ts";
-import { buildPdaEmbed, deferEphemeralReply, getDiscordHttpStatus, getInteractionDisplayName, resolveConfiguredPdaChannel, sendEphemeral, sendPdaMessage } from "./pda-support.ts";
+import { buildPdaEmbed, deferEphemeralReply, getDiscordHttpStatus, resolveConfiguredPdaChannel, sendEphemeral, sendPdaMessage } from "./pda-support.ts";
 
 // Keep slash-command validation aligned with the downstream thread-title and embed limits.
 const pdaCharacterNameMaxLength = 94;
@@ -88,7 +88,7 @@ export const pdaCommand: SlashCommand = {
 
         const characterName = interaction.options.getString("character_name", true);
         const message = interaction.options.getString("message", true);
-        const embed = buildPdaEmbed(characterName, message, getInteractionDisplayName(interaction));
+        const embed = buildPdaEmbed(characterName, message);
 
         try {
             await sendPdaMessage(channel, embed, characterName);
