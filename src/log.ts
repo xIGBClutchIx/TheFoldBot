@@ -23,6 +23,7 @@ function writeLog(level: LogLevel, scope: string, message: string, fields: LogFi
 
 function formatTimestamp(): string {
     return new Intl.DateTimeFormat("en-US", {
+        fractionalSecondDigits: 3,
         hour: "2-digit",
         hour12: false,
         minute: "2-digit",
