@@ -2,7 +2,7 @@ import { MessageFlags, type ChatInputCommandInteraction, type Interaction, type 
 
 import { commandsByName } from "../commands/index.ts";
 import { logError, logWarn } from "../log.ts";
-import { getDiscordApiErrorCode } from "../commands/pda-support.ts";
+import { getDiscordApiErrorCode, isIgnorableInteractionError } from "../commands/pda-support.ts";
 
 const executionErrorMessage: InteractionReplyOptions = {
     content: "There was an error while executing this command.",
@@ -26,7 +26,7 @@ async function replyWithExecutionError(interaction: ChatInputCommandInteraction)
 
         await interaction.reply(executionErrorMessage);
     } catch (error) {
-        if (typeof error === "object" && error !== null && getDiscordApiErrorCode(error) === 40060) {
+        if (typeof error === "object" && error !== null && isIgnorableInteractionError(error)) {
             logWarn("commands", "skipped execution error response because the interaction was already acknowledged", {
                 commandName: interaction.commandName,
                 guildId: interaction.guildId,
@@ -61,6 +61,16 @@ export async function handleInteractionCreate(interaction: Interaction): Promise
     try {
         await command.execute(interaction);
     } catch (error) {
+        if (typeof error === "object" && error !== null && isIgnorableInteractionError(error)) {
+            logWarn("commands", "ignored stale interaction during command execution", {
+                code: getDiscordApiErrorCode(error),
+                commandName: interaction.commandName,
+                guildId: interaction.guildId,
+                interactionId: interaction.id,
+            });
+            return;
+        }
+
         logError("commands", "failed to execute command", {
             commandName: interaction.commandName,
             guildId: interaction.guildId,

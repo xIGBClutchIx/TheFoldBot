@@ -36,6 +36,7 @@ interface DiscordApiError {
 }
 
 const interactionAlreadyAcknowledgedCode = 40060;
+const unknownInteractionCode = 10062;
 
 export async function deferEphemeralReply(interaction: ChatInputCommandInteraction): Promise<boolean> {
     if (interaction.deferred || interaction.replied) {
@@ -48,7 +49,7 @@ export async function deferEphemeralReply(interaction: ChatInputCommandInteracti
         });
         return true;
     } catch (error) {
-        if (typeof error === "object" && error !== null && getDiscordApiErrorCode(error) === interactionAlreadyAcknowledgedCode) {
+        if (typeof error === "object" && error !== null && isIgnorableInteractionError(error)) {
             return false;
         }
 
@@ -79,7 +80,7 @@ export async function sendEphemeral(interaction: ChatInputCommandInteraction, co
         await interaction.reply(replyMessage);
         return true;
     } catch (error) {
-        if (typeof error === "object" && error !== null && getDiscordApiErrorCode(error) === interactionAlreadyAcknowledgedCode) {
+        if (typeof error === "object" && error !== null && isIgnorableInteractionError(error)) {
             return false;
         }
 
@@ -188,6 +189,12 @@ export function getDiscordApiErrorCode(error: object | null): number | null {
     }
 
     return error.code;
+}
+
+export function isIgnorableInteractionError(error: object | null): boolean {
+    const code = getDiscordApiErrorCode(error);
+
+    return code === interactionAlreadyAcknowledgedCode || code === unknownInteractionCode;
 }
 
 function isThreadOnlyPdaChannel(channel: SupportedPdaChannel): channel is ForumChannel | MediaChannel {

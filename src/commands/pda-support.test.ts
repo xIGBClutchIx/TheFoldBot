@@ -2,7 +2,7 @@ import { ChannelType, MessageFlags, PermissionFlagsBits, PermissionsBitField } f
 
 import { describe, expect, test, vi } from "vite-plus/test";
 
-import { buildPdaEmbed, deferEphemeralReply, getMissingPostPermissions, sendEphemeral, sendPdaMessage } from "./pda-support.ts";
+import { buildPdaEmbed, deferEphemeralReply, getMissingPostPermissions, isIgnorableInteractionError, sendEphemeral, sendPdaMessage } from "./pda-support.ts";
 
 describe("pda support", () => {
     test("builds the PDA embed with the sender footer", () => {
@@ -71,5 +71,11 @@ describe("pda support", () => {
         expect(deferReply).toHaveBeenCalledWith({
             flags: MessageFlags.Ephemeral,
         });
+    });
+
+    test("treats already-acknowledged and unknown interactions as ignorable", () => {
+        expect(isIgnorableInteractionError({ code: 40060 })).toBe(true);
+        expect(isIgnorableInteractionError({ code: 10062 })).toBe(true);
+        expect(isIgnorableInteractionError({ code: 50013 })).toBe(false);
     });
 });
