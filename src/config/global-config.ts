@@ -1,15 +1,17 @@
 import { mkdir } from "node:fs/promises";
+import { homedir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 
+const globalConfigDirectoryName = ".thefoldbot";
 const PDA_CHANNEL_ID_KEY = "pda.channel";
 
 export interface GlobalConfig {
     pdaChannelId: string | null;
 }
 
-export function getGlobalConfigDatabasePath(cwd: string = process.cwd()): string {
-    return resolve(cwd, "config.sqlite");
+export function getGlobalConfigDatabasePath(homeDirectory: string = homedir()): string {
+    return resolve(homeDirectory, globalConfigDirectoryName, "config.sqlite");
 }
 
 export async function initializeGlobalConfigDatabase(databasePath: string = getGlobalConfigDatabasePath()): Promise<void> {

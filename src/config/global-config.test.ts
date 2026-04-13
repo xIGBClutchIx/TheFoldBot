@@ -5,9 +5,13 @@ import { DatabaseSync } from "node:sqlite";
 
 import { describe, expect, test } from "vite-plus/test";
 
-import { getConfiguredPdaChannelId, loadGlobalConfig, setConfiguredPdaChannelId } from "./global-config.ts";
+import { getConfiguredPdaChannelId, getGlobalConfigDatabasePath, loadGlobalConfig, setConfiguredPdaChannelId } from "./global-config.ts";
 
 describe("global config", () => {
+    test("uses a stable global path by default", () => {
+        expect(getGlobalConfigDatabasePath("/tmp/thefoldbot-home")).toBe("/tmp/thefoldbot-home/.thefoldbot/config.sqlite");
+    });
+
     test("returns an empty config when the database does not exist yet", async () => {
         const databasePath = join(await mkdtemp(join(tmpdir(), "thefoldbot-config-")), "config.sqlite");
 

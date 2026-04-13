@@ -1,12 +1,14 @@
 import {
     ChannelType,
     EmbedBuilder,
+    MessageFlags,
     PermissionFlagsBits,
     type ChatInputCommandInteraction,
     type ForumChannel,
     type Guild,
     type GuildBasedChannel,
     type GuildMember,
+    type InteractionEditReplyOptions,
     type InteractionReplyOptions,
     type MediaChannel,
     type NewsChannel,
@@ -29,18 +31,60 @@ interface DiscordHttpError {
     status: number;
 }
 
-export async function sendEphemeral(interaction: ChatInputCommandInteraction, content: string): Promise<void> {
-    const message: InteractionReplyOptions = {
-        content,
-        ephemeral: true,
-    };
+interface DiscordApiError {
+    code: number;
+}
 
-    if (interaction.replied || interaction.deferred) {
-        await interaction.followUp(message);
-        return;
+const interactionAlreadyAcknowledgedCode = 40060;
+
+export async function deferEphemeralReply(interaction: ChatInputCommandInteraction): Promise<boolean> {
+    if (interaction.deferred || interaction.replied) {
+        return true;
     }
 
-    await interaction.reply(message);
+    try {
+        await interaction.deferReply({
+            flags: MessageFlags.Ephemeral,
+        });
+        return true;
+    } catch (error) {
+        if (typeof error === "object" && error !== null && getDiscordApiErrorCode(error) === interactionAlreadyAcknowledgedCode) {
+            return false;
+        }
+
+        throw error;
+    }
+}
+
+export async function sendEphemeral(interaction: ChatInputCommandInteraction, content: string): Promise<boolean> {
+    const replyMessage: InteractionReplyOptions = {
+        content,
+        flags: MessageFlags.Ephemeral,
+    };
+    const editMessage: InteractionEditReplyOptions = {
+        content,
+    };
+
+    try {
+        if (interaction.deferred) {
+            await interaction.editReply(editMessage);
+            return true;
+        }
+
+        if (interaction.replied) {
+            await interaction.followUp(replyMessage);
+            return true;
+        }
+
+        await interaction.reply(replyMessage);
+        return true;
+    } catch (error) {
+        if (typeof error === "object" && error !== null && getDiscordApiErrorCode(error) === interactionAlreadyAcknowledgedCode) {
+            return false;
+        }
+
+        throw error;
+    }
 }
 
 export function isSupportedPdaChannel(channel: GuildBasedChannel | null): channel is SupportedPdaChannel {
@@ -138,10 +182,22 @@ export function getDiscordHttpStatus(error: object | null): number | null {
     return error.status;
 }
 
+export function getDiscordApiErrorCode(error: object | null): number | null {
+    if (error === null || !isDiscordApiError(error)) {
+        return null;
+    }
+
+    return error.code;
+}
+
 function isThreadOnlyPdaChannel(channel: SupportedPdaChannel): channel is ForumChannel | MediaChannel {
     return channel.type === ChannelType.GuildForum || channel.type === ChannelType.GuildMedia;
 }
 
 function isDiscordHttpError(error: object): error is DiscordHttpError {
     return "status" in error && typeof error.status === "number";
+}
+
+function isDiscordApiError(error: object): error is DiscordApiError {
+    return "code" in error && typeof error.code === "number";
 }

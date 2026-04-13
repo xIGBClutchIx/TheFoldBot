@@ -1,8 +1,8 @@
-import { ChannelType, PermissionFlagsBits, PermissionsBitField } from "discord.js";
+import { ChannelType, MessageFlags, PermissionFlagsBits, PermissionsBitField } from "discord.js";
 
 import { describe, expect, test, vi } from "vite-plus/test";
 
-import { buildPdaEmbed, getMissingPostPermissions, sendPdaMessage } from "./pda-support.ts";
+import { buildPdaEmbed, deferEphemeralReply, getMissingPostPermissions, sendEphemeral, sendPdaMessage } from "./pda-support.ts";
 
 describe("pda support", () => {
     test("builds the PDA embed with the sender footer", () => {
@@ -40,6 +40,36 @@ describe("pda support", () => {
             message: {
                 embeds: [expect.anything()],
             },
+        });
+    });
+
+    test("edits the deferred reply when sending an ephemeral response", async () => {
+        const editReply = vi.fn().mockResolvedValue(undefined);
+        const interaction = {
+            deferred: true,
+            editReply,
+            followUp: vi.fn(),
+            replied: false,
+            reply: vi.fn(),
+        };
+
+        await expect(sendEphemeral(interaction as never, "PDA message sent.")).resolves.toBe(true);
+        expect(editReply).toHaveBeenCalledWith({
+            content: "PDA message sent.",
+        });
+    });
+
+    test("defers with an ephemeral flag for long-running command flows", async () => {
+        const deferReply = vi.fn().mockResolvedValue(undefined);
+        const interaction = {
+            deferred: false,
+            deferReply,
+            replied: false,
+        };
+
+        await expect(deferEphemeralReply(interaction as never)).resolves.toBe(true);
+        expect(deferReply).toHaveBeenCalledWith({
+            flags: MessageFlags.Ephemeral,
         });
     });
 });

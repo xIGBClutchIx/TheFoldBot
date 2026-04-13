@@ -3,7 +3,7 @@ import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import { setConfiguredPdaChannelId } from "../config/global-config.ts";
 import { logInfo } from "../log.ts";
 import type { SlashCommand } from "./slash-command.ts";
-import { getMissingPostPermissions, isSupportedPdaChannel, sendEphemeral, supportedPdaChannelTypes } from "./pda-support.ts";
+import { deferEphemeralReply, getMissingPostPermissions, isSupportedPdaChannel, sendEphemeral, supportedPdaChannelTypes } from "./pda-support.ts";
 
 export const setPdaChannelCommand: SlashCommand = {
     name: "set_pda_channel",
@@ -24,15 +24,9 @@ export const setPdaChannelCommand: SlashCommand = {
             return;
         }
 
-        const guild = interaction.guild;
+        const guild = interaction.guild!;
 
-        if (guild === null) {
-            await sendEphemeral(interaction, "This command can only be used in a server.");
-            return;
-        }
-
-        if (!interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) {
-            await sendEphemeral(interaction, "You need administrator permission to use this.");
+        if (!(await deferEphemeralReply(interaction))) {
             return;
         }
 

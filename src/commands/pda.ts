@@ -3,25 +3,31 @@ import { SlashCommandBuilder } from "discord.js";
 import { getConfiguredPdaChannelId } from "../config/global-config.ts";
 import { logInfo, logWarn } from "../log.ts";
 import type { SlashCommand } from "./slash-command.ts";
-import { buildPdaEmbed, getDiscordHttpStatus, getInteractionDisplayName, resolveConfiguredPdaChannel, sendEphemeral, sendPdaMessage } from "./pda-support.ts";
+import { buildPdaEmbed, deferEphemeralReply, getDiscordHttpStatus, getInteractionDisplayName, resolveConfiguredPdaChannel, sendEphemeral, sendPdaMessage } from "./pda-support.ts";
+
+const pdaCharacterNameMaxLength = 94;
+const pdaMessageMaxLength = 4096;
 
 export const pdaCommand: SlashCommand = {
     name: "pda",
     data: new SlashCommandBuilder()
         .setName("pda")
         .setDescription("Send a PDA message")
-        .addStringOption((option) => option.setName("character_name").setDescription("Your character name").setRequired(true))
-        .addStringOption((option) => option.setName("message").setDescription("Your message").setRequired(true)),
+        .addStringOption((option) => option.setName("character_name").setDescription("Your character name").setMaxLength(pdaCharacterNameMaxLength).setRequired(true))
+        .addStringOption((option) => option.setName("message").setDescription("Your message").setMaxLength(pdaMessageMaxLength).setRequired(true)),
     async execute(interaction) {
         if (!interaction.inGuild()) {
             await sendEphemeral(interaction, "This command can only be used in a server.");
             return;
         }
 
-        const guild = interaction.guild;
+        const guild = interaction.guild!;
 
-        if (guild === null) {
-            await sendEphemeral(interaction, "This command can only be used in a server.");
+        if (!(await deferEphemeralReply(interaction))) {
+            logWarn("pda", "interaction was already acknowledged before pda execution", {
+                guildId: interaction.guildId,
+                interactionId: interaction.id,
+            });
             return;
         }
 
@@ -112,6 +118,18 @@ export const pdaCommand: SlashCommand = {
             guildId: interaction.guildId,
             sentBy: interaction.user.id,
         });
-        await sendEphemeral(interaction, "PDA message sent.");
+        const sentConfirmation = await sendEphemeral(interaction, "PDA message sent.");
+
+        if (!sentConfirmation) {
+            logWarn("pda", "skipped pda confirmation because the interaction was already acknowledged", {
+                guildId: interaction.guildId,
+                interactionId: interaction.id,
+            });
+        }
     },
+};
+
+export const pdaCommandLimits = {
+    characterNameMaxLength: pdaCharacterNameMaxLength,
+    messageMaxLength: pdaMessageMaxLength,
 };

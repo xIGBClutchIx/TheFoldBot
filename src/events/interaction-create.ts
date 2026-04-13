@@ -1,20 +1,42 @@
-import type { ChatInputCommandInteraction, Interaction, InteractionReplyOptions } from "discord.js";
+import { MessageFlags, type ChatInputCommandInteraction, type Interaction, type InteractionEditReplyOptions, type InteractionReplyOptions } from "discord.js";
 
 import { commandsByName } from "../commands/index.ts";
 import { logError, logWarn } from "../log.ts";
+import { getDiscordApiErrorCode } from "../commands/pda-support.ts";
 
 const executionErrorMessage: InteractionReplyOptions = {
     content: "There was an error while executing this command.",
-    ephemeral: true,
+    flags: MessageFlags.Ephemeral,
+};
+const deferredExecutionErrorMessage: InteractionEditReplyOptions = {
+    content: "There was an error while executing this command.",
 };
 
 async function replyWithExecutionError(interaction: ChatInputCommandInteraction): Promise<void> {
-    if (interaction.replied || interaction.deferred) {
-        await interaction.followUp(executionErrorMessage);
-        return;
-    }
+    try {
+        if (interaction.deferred) {
+            await interaction.editReply(deferredExecutionErrorMessage);
+            return;
+        }
 
-    await interaction.reply(executionErrorMessage);
+        if (interaction.replied) {
+            await interaction.followUp(executionErrorMessage);
+            return;
+        }
+
+        await interaction.reply(executionErrorMessage);
+    } catch (error) {
+        if (typeof error === "object" && error !== null && getDiscordApiErrorCode(error) === 40060) {
+            logWarn("commands", "skipped execution error response because the interaction was already acknowledged", {
+                commandName: interaction.commandName,
+                guildId: interaction.guildId,
+                interactionId: interaction.id,
+            });
+            return;
+        }
+
+        throw error;
+    }
 }
 
 export async function handleInteractionCreate(interaction: Interaction): Promise<void> {
